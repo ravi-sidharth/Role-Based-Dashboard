@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
-
+import { jwtDecode } from "jwt-decode";
+import Cookies from 'js-cookie'
 
 
 function Login() {
@@ -12,11 +13,29 @@ function Login() {
     const navigate = useNavigate()
     const {register,handleSubmit}=useForm<Inputs>()
 
-    const handleLoginFormData = (data:Inputs) => {
-        axios.post('https://role-based-dashboard-0vpx.onrender.com/api/user/login',data)
-        .then(result=> console.log(result))
-        .catch(e=> console.log(e))
-        navigate('/user/dashboard')
+    const handleLoginFormData = async (data:Inputs) => {
+        try {
+            const {email ,password } = data
+            const result = await axios.post('https://role-based-dashboard-0vpx.onrender.com/api/user/login',{email,password})
+            Cookies.set("token",result.data.token)
+    
+            if (result.data.success) {
+                const decodedToken:any = jwtDecode(result?.data?.token)
+                if (decodedToken.role ==="admin") {
+                    navigate('/admin/dashboard')
+                    alert(result?.data?.message)
+                } else {
+                    navigate('/user/dashboard')
+                    alert(result?.data?.message)
+                }
+            } else {
+                alert(result.data.message)
+            }
+            
+        } catch(e:any) {
+            console.log(e.res?.data?.message || e)
+            alert(e.res?.data?.message)
+        }
     }
   return (
     <div className="flex flex-col items-center">

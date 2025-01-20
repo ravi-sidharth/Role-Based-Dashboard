@@ -11,13 +11,18 @@ function Signup() {
 
     const {register,handleSubmit} = useForm<Inputs>()
     const navigate = useNavigate()
-
-    const handleSignupFormData = (data:Inputs) => {
-        console.log(data,"User sign in data")
-            axios.post('https://role-based-dashboard-0vpx.onrender.com/api/user/signup',data)
-            .then(result=>console.log(result,"Sign Up data"))
-            .catch(err=> console.log(err))
-        navigate('/')
+    
+    const handleSignupFormData =async (data:Inputs) => {
+        try{
+            const {name , email, password} = data
+            const result = await axios.post('https://role-based-dashboard-0vpx.onrender.com/api/user/signup',{name,email,password})
+            navigate("/")
+            alert(result?.data?.message)
+        } catch(e:any) {
+            console.log(e.response?.data?.message)
+            alert(e.response?.data?.message)
+        }
+         
     }   
 
   return (
