@@ -22,19 +22,19 @@ function Login() {
             if (result.data.success) {
                 const decodedToken:any = jwtDecode(result?.data?.token)
                 if (decodedToken.role ==="admin") {
+                    alert(result?.data?.message)
                     navigate('/admin/dashboard')
-                    alert(result?.data?.message)
                 } else {
-                    navigate('/user/dashboard')
                     alert(result?.data?.message)
+                    navigate('/user/dashboard')
                 }
             } else {
                 alert(result.data.message)
             }
             
         } catch(e:any) {
-            console.log(e.res?.data?.message || e)
-            alert(e.res?.data?.message)
+            console.log("Error while login",e)
+            alert(e.response?.data?.message)
         }
     }
   return (

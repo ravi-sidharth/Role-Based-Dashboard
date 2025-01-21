@@ -19,7 +19,7 @@ function Signup() {
             navigate("/")
             alert(result?.data?.message)
         } catch(e:any) {
-            console.log(e.response?.data?.message)
+            console.log("Error while signup:",e)
             alert(e.response?.data?.message)
         }
          

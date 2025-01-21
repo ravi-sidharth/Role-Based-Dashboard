@@ -2,9 +2,9 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
-function UserDashboard() {
-  type User = {
+type User = {
     name: string;
     email: string;
     password: string;
@@ -12,25 +12,42 @@ function UserDashboard() {
   };
 
   type Task = {
-    title:string,
-    description:string,
-    createdBy:User,
+    title: string;
+    description: string;
+    createdBy: User;
   };
+function UserDashboard() {
 
-  const token = Cookies.get("token");
+  const navigate:any = useNavigate()
+  // const token:string | undefined = Cookies.get("token") ?? undefined
   const [tasks, setTasks] = useState<Task[]>([]);
-  let user: User | null = null;
+  const [user,setUser] = useState<User |null >(null)
 
-  try {
-    if (token) {
-      user = jwtDecode<User>(token);
+  useEffect(() => {
+    const token:string | undefined = Cookies.get("token") ?? undefined
+    fetchUserTasks(token);
+    if(!token) {
+      navigate('/')
+      return
     }
-  } catch (e) {
-    console.log(e);
-    alert("Token not found!");
-  }
 
-  const fetchUserTasks = async () => {
+    try {
+      if (token) {
+        setUser(jwtDecode(token));
+      }
+  
+    } catch (e) {
+      console.log(e);
+      alert("Token not found!");
+      navigate('/')
+      return
+
+    }
+  }, [navigate]);
+
+  
+
+  const fetchUserTasks = async (token?:string) => {
     try {
       const result = await axios.get(
         "https://role-based-dashboard-0vpx.onrender.com/api/user/tasks",
@@ -42,24 +59,23 @@ function UserDashboard() {
         }
       );
       setTasks(result.data.tasks);
+      alert(result.data.message);
     } catch (e: any) {
-      console.log(e.result.data.message || e);
-      alert(e.result.data.message);
+      console.log(e);
+      alert(e.result?.data?.message || e.response.data.message);
+      navigate('/')
+      return
     }
-
-    useEffect(() => {
-      fetchUserTasks();
-    }, []);
   };
-  
+
   return (
     <div>
       <h1 className="text-center text-4xl">Welcome {user?.name}</h1>
-      {tasks && tasks.length >0  ? (
-        tasks.map((task:Task, index: number) => {
+      {tasks && tasks.length > 0 ? (
+        tasks.map((task: Task, index: number) => {
           return (
             <div key={index}>
-              <h1 >{task.title}</h1>
+              <h1>{task.title}</h1>
               <pre>{task.description}</pre>
               <p>{task.createdBy.name}</p>
             </div>
@@ -68,7 +84,7 @@ function UserDashboard() {
       ) : (
         <p className="text-2xl">Loading tasks...</p>
       )}
-    </div>
+      </div>
   );
 }
 
