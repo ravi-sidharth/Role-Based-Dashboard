@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
 type User = {
+  _id: string;
   name: string;
   email: string;
   password: string;
@@ -12,6 +13,7 @@ type User = {
 };
 
 type Task = {
+  _id: string;
   title: string;
   description: string;
   createdBy: User;
@@ -25,6 +27,7 @@ function AdminDashboard() {
   useEffect(() => {
     const token: string | undefined = Cookies.get("token") ?? undefined;
     if (!token) {
+      alert("Token not found!");
       navigate("/");
       return;
     }
@@ -35,9 +38,10 @@ function AdminDashboard() {
       }
     } catch (e) {
       console.log(e);
-      alert("Token not found!");
-      navigate('/ ')
+      alert("Token is invalid!");
+      navigate("/ ");
     }
+
     fetchAllUsersTasks(token);
   }, [navigate]);
 
@@ -52,8 +56,7 @@ function AdminDashboard() {
           },
         }
       );
-      setTasks(result.data.tasks);
-      console.log("result", result);
+      setTasks(result.data.tasks)
       alert(result.data.message);
     } catch (e: any) {
       console.log(e, "error");
@@ -64,28 +67,41 @@ function AdminDashboard() {
   };
 
   return (
-    <>
+    <div className="w-[80%] mx-auto">
       {user?.role === "admin" ? (
         <div>
           <h1 className="text-center text-4xl">
             Welcome to the Admin dashboard
           </h1>
-          {tasks ? (
-            tasks.map((task: Task, index: number) => (
-              <div key={index}>
-                <h1>{task.title}</h1>
-                <pre>{task.description}</pre>
-                <p>{task.createdBy.name}</p>
-              </div>
-            ))
-          ) : (
-            <p>Loading tasks...</p>
-          )}
+          <div className="flex flex-wrap gap-5 mt-5">
+            {tasks ? (
+              tasks.map((task: Task) => {
+                return (
+                  <div
+                    className="p-4 w-[290px] flex flex-col bg-gray-400 text-wrap gap-3"
+                    key={task._id}
+                  >
+                    <h1 className="text-2xl font-bold leading-6 text-wrap">
+                      {task.title}
+                    </h1>
+                    <pre className="text-wrap leading-4">
+                      {task.description}
+                    </pre>
+                    <p className="text-wrap text-sm text-gray-800 text-right">
+                      Created By {task.createdBy.name}❤️
+                    </p>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-2xl">Loading tasks...</p>
+            )}
+          </div>
         </div>
       ) : (
         <div></div>
       )}
-    </>
+    </div>
   );
 }
 

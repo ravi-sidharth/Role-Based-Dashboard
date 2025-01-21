@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 type User = {
+    _id:string
     name: string;
     email: string;
     password: string;
@@ -12,6 +13,7 @@ type User = {
   };
 
   type Task = {
+    _id:string
     title: string;
     description: string;
     createdBy: User;
@@ -54,7 +56,7 @@ function UserDashboard() {
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -67,23 +69,25 @@ function UserDashboard() {
       return
     }
   };
-
+ 
   return (
-    <div>
-      <h1 className="text-center text-4xl">Welcome {user?.name}</h1>
-      {tasks && tasks.length > 0 ? (
-        tasks.map((task: Task, index: number) => {
+    <div className="w-[80%] mx-auto overflow-x-hidden">
+      <h1 className="text-center text-4xl pt-2">Welcome {user?.name}</h1>
+      <div className="flex flex-wrap gap-5 mt-5">
+      {tasks ? (
+        tasks.map((task: Task) => {
           return (
-            <div key={index}>
-              <h1>{task.title}</h1>
-              <pre>{task.description}</pre>
-              <p>{task.createdBy.name}</p>
+            <div className="p-4 w-[290px] flex flex-col bg-gray-400 text-wrap gap-3" key={task._id}>
+              <h1 className="text-2xl font-bold leading-6 text-wrap">{task.title}</h1>
+              <pre className="text-wrap leading-4">{task.description}</pre>
+              <p className="text-wrap text-sm text-gray-800 text-right">Created By {task.createdBy.name}❤️</p>
             </div>
           );
         })
       ) : (
         <p className="text-2xl">Loading tasks...</p>
       )}
+    </div>
       </div>
   );
 }
