@@ -2,13 +2,12 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
 
+type Inputs ={
+    name:string,
+    email:string,
+    password:string
+}
 function Signup() {
-    type Inputs ={
-        name:string,
-        email:string,
-        password:string
-    }
-
     const {register,handleSubmit} = useForm<Inputs>()
     const navigate = useNavigate()
     

@@ -4,23 +4,31 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Cookies from 'js-cookie'
 
+type Inputs = {
+    email:string,
+    password:string
+}
 
-function Login() {
-    type Inputs = {
-        email:string,
-        password:string
-    }
-    const navigate = useNavigate()
+type User = {
+    _id:string
+    name: string;
+    email: string;
+    password: string;
+    role: string;
+  };
+
+function Login(){
+    const navigate:any = useNavigate()
     const {register,handleSubmit}=useForm<Inputs>()
 
     const handleLoginFormData = async (data:Inputs) => {
         try {
             const {email ,password } = data
-            const result = await axios.post('https://role-based-dashboard-0vpx.onrender.com/api/user/login',{email,password})
+            const result = await axios.post(`https://role-based-dashboard-0vpx.onrender.com/api/user/login`,{email,password})
             Cookies.set("token",result.data.token)
     
             if (result.data.success) {
-                const decodedToken:any = jwtDecode(result?.data?.token)
+                const decodedToken:User = jwtDecode(result?.data?.token)
                 if (decodedToken.role ==="admin") {
                     alert(result?.data?.message)
                     navigate('/admin/dashboard')

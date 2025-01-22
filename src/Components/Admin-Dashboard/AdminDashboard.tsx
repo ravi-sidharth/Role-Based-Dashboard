@@ -20,32 +20,29 @@ type Task = {
 };
 
 function AdminDashboard() {
-  const navigate: any = useNavigate();
+  const navigate:any= useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const token: string | undefined = Cookies.get("token") ?? undefined;
-    if (!token) {
-      alert("Token not found!");
-      navigate("/");
-      return;
-    }
-
     try {
-      if (token) {
-        setUser(jwtDecode(token));
+      const token: string | undefined = Cookies.get("token") ?? undefined;
+      if (!token) {
+        alert("Please login to continue!");
+        navigate("/");
+        return;
       }
+
+      setUser(jwtDecode(token));
+      fetchAllUsersTasks(token);
     } catch (e) {
       console.log(e);
       alert("Token is invalid!");
-      navigate("/ ");
+      navigate("/");
     }
-
-    fetchAllUsersTasks(token);
   }, [navigate]);
 
-  const fetchAllUsersTasks = async (token?: string) => {
+  const fetchAllUsersTasks = async (token: string) => {
     try {
       const result = await axios.get(
         "https://role-based-dashboard-0vpx.onrender.com/api/admin/tasks",
@@ -56,12 +53,12 @@ function AdminDashboard() {
           },
         }
       );
-      setTasks(result.data.tasks)
+      setTasks(result.data.tasks);
       alert(result.data.message);
     } catch (e: any) {
       console.log(e, "error");
       alert(e.response.data.message);
-      navigate("/");
+      navigate(-1);
       return;
     }
   };
