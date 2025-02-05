@@ -28,7 +28,7 @@ function UserDashboard() {
     try {
       const token: string | undefined = Cookies.get("token") ?? undefined;
       if (!token) {
-        alert("Please login to continue!")
+        alert("Please login to continue!");
         navigate("/");
         return;
       }
@@ -42,7 +42,7 @@ function UserDashboard() {
     }
   }, [navigate]);
 
-  const fetchUserTasks = async (token:string) => {
+  const fetchUserTasks = async (token: string) => {
     try {
       const result = await axios.get(
         "https://role-based-dashboard-0vpx.onrender.com/api/user/tasks",

@@ -20,7 +20,7 @@ type Task = {
 };
 
 function AdminDashboard() {
-  const navigate:any= useNavigate();
+  const navigate: any = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
@@ -32,7 +32,6 @@ function AdminDashboard() {
         navigate("/");
         return;
       }
-
       setUser(jwtDecode(token));
       fetchAllUsersTasks(token);
     } catch (e) {
