@@ -24,6 +24,11 @@ function UserDashboard() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [user, setUser] = useState<User | null>(null);
 
+  const handleLogout = () => {
+    Cookies.remove("token",{ path: '/' })
+    navigate('/')
+  }
+
   useEffect(() => {
     try {
       const token: string | undefined = Cookies.get("token") ?? undefined;
@@ -57,7 +62,7 @@ function UserDashboard() {
       alert(result.data.message);
     } catch (e: any) {
       console.log(e);
-      alert(e.result?.data?.message || e.response.data.message);
+      alert(e.result.data.message || e.response.data.message);
       navigate("/");
       return;
     }
@@ -66,6 +71,7 @@ function UserDashboard() {
   return (
     <div className="w-[80%] mx-auto overflow-x-hidden">
       <h1 className="text-center text-4xl pt-2">Welcome {user?.name}</h1>
+      <button className="text-end px-2 py-4 rounded-lg bg-red-500" onClick={handleLogout}>Logout</button>
       <div className="flex flex-wrap gap-5 mt-5">
         {tasks && tasks.length > 0 ? (
           tasks.map((task: Task) => {
