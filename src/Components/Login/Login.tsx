@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import axiosInstance from "../../Utils/axiosInstance";
 
 type Inputs = {
   email: string;
@@ -24,8 +25,8 @@ function Login() {
   const handleLoginFormData = async (data: Inputs) => {
     try {
       const { email, password } = data;
-      const result = await axios.post(
-        `https://role-based-dashboard-0vpx.onrender.com/api/user/login`,
+      const result = await axiosInstance.post(
+        `/user/login`,
         { email, password }
       );
       Cookies.set("token", result.data.token);

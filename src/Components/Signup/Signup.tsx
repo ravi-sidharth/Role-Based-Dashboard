@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router-dom";
+import axiosInstance from "../../Utils/axiosInstance";
 
 type Inputs = {
   name: string;
@@ -14,8 +14,8 @@ function Signup() {
   const handleSignupFormData = async (data: Inputs) => {
     try {
       const { name, email, password } = data;
-      const result = await axios.post(
-        "https://role-based-dashboard-0vpx.onrender.com/api/user/signup",
+      const result = await axiosInstance.post(
+        "/user/signup",
         { name, email, password }
       );
       navigate("/");

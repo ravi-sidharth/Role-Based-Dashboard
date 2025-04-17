@@ -1,8 +1,9 @@
-import axios from "axios";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import TaskCreate from "../Task-Create/TaskCreate";
+import axiosInstance from "../../Utils/axiosInstance";
 
 type User = {
   _id: string;
@@ -23,34 +24,18 @@ function UserDashboard() {
   const navigate: any = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [createTaskPopup, setCreateTaskPopup] = useState(false);
+  const [newTaskCreated, setNewTaskCreated] = useState(false)
 
   const handleLogout = () => {
-    Cookies.remove("token",{ path: '/' })
-    navigate('/')
-  }
-
-  useEffect(() => {
-    try {
-      const token: string | undefined = Cookies.get("token") ?? undefined;
-      if (!token) {
-        alert("Please login to continue!");
-        navigate("/");
-        return;
-      }
-      setUser(jwtDecode(token));
-      fetchUserTasks(token);
-    } catch (e) {
-      console.log(e);
-      alert("Token is invalid!");
-      navigate("/");
-      return;
-    }
-  }, [navigate]);
+    Cookies.remove("token", { path: "/" });
+    navigate("/");
+  };
 
   const fetchUserTasks = async (token: string) => {
     try {
-      const result = await axios.get(
-        "https://role-based-dashboard-0vpx.onrender.com/api/user/tasks",
+      const result = await axiosInstance.get(
+        "/get-task",
         {
           headers: {
             "Content-Type": "application/json",
@@ -62,38 +47,78 @@ function UserDashboard() {
       alert(result.data.message);
     } catch (e: any) {
       console.log(e);
-      alert(e.result.data.message || e.response.data.message);
-      navigate("/");
+      alert(e.response.data.message);
+      navigate(-1);
       return;
     }
   };
 
+  useEffect(() => {
+    try {
+      const token: string | undefined = Cookies.get("token") ?? undefined;
+      if (!token) {
+        alert("Please login to continue!");
+        navigate("/");
+        return;
+      }
+      setUser(jwtDecode(token));
+      fetchUserTasks(token);
+    } catch (e: any) {
+      alert(e.response.data.message);
+      navigate(-1);
+      return;
+    }
+  }, [navigate,newTaskCreated]);
+
   return (
-    <div className="w-[80%] mx-auto overflow-x-hidden">
-      <h1 className="text-center text-4xl pt-2">Welcome {user?.name}</h1>
-      <button className="text-end px-2 py-4 rounded-lg bg-red-500" onClick={handleLogout}>Logout</button>
-      <div className="flex flex-wrap gap-5 mt-5">
-        {tasks && tasks.length > 0 ? (
-          tasks.map((task: Task) => {
-            return (
-              <div
-                className="p-4 w-[290px] flex flex-col bg-gray-400 text-wrap gap-3"
-                key={task._id}
-              >
-                <h1 className="text-2xl font-bold leading-6 text-wrap">
-                  {task.title}
-                </h1>
-                <pre className="text-wrap leading-4">{task.description}</pre>
-                <p className="text-wrap text-sm text-gray-800 text-right">
-                  Created By {task.createdBy.name}❤️
-                </p>
-              </div>
-            );
-          })
-        ) : (
-          <p className="text-2xl">Loading tasks...</p>
-        )}
-      </div>
+    <div className="w-[80%] mx-auto flex pt-10">
+     <div>
+     {user?.role === "user" ? (
+        <div className="">
+          <h1 className="text-center text-4xl">
+            Welcome to the User dashboard
+          </h1>
+          <div className="flex justify-between">
+            <button
+              onClick={() => setCreateTaskPopup(prev=>!prev)}
+              className="bg-green-500 hover:bg-green-700 px-4 py-2 rouded-lg "
+            >
+              Add Task
+            </button>
+            <button onClick={handleLogout} className="bg-red-600 px-4 py-2 rouded-lg ">Logout</button>
+          </div>
+          <div className="flex flex-wrap gap-5 mt-5">
+            {tasks ? (
+              tasks.map((task: Task) => {
+                return (
+                  <div
+                    className="p-4 w-[290px] flex flex-col bg-gray-400 text-wrap gap-3"
+                    key={task._id}
+                  >
+                    <h1 className="text-2xl font-bold leading-6 text-wrap">
+                      {task.title}
+                    </h1>
+                    <pre className="text-wrap leading-4">
+                      {task.description}
+                    </pre>
+                    <p className="text-wrap text-sm text-gray-800 text-right">
+                      Created By {task.createdBy.name}❤️
+                    </p>
+                  </div>
+                );
+              })
+            ) : (
+              <p className="text-2xl">Loading tasks...</p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div >
+          
+        </div>
+      )}
+     </div>
+    <div className="absolute h-[100%] ml-[30%] flex justify-center items-center"> {createTaskPopup && <TaskCreate setCreateTaskPopup={setCreateTaskPopup} setNewTaskCreated={setNewTaskCreated} />}</div>
     </div>
   );
 }
