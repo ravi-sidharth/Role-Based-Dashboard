@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useForm } from "react-hook-form";
 import Cookies from "js-cookie";
 import axiosInstance from "../../Utils/axiosInstance";
