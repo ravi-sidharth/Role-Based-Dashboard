@@ -8,7 +8,7 @@ type Task = {
 };
 
 type Props = {
-  setCreateTaskPopup: React.Dispatch<React.SetStateAction<boolean>>;
+  setCreateTaskPopup: React.Dispatch<React.SetStateAction<boolean>>
   setNewTaskCreated: React.Dispatch<React.SetStateAction<boolean>>;
 };
 

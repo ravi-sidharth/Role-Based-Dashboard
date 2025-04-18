@@ -23,6 +23,7 @@ function AdminDashboard() {
   const navigate: any = useNavigate();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [user, setUser] = useState<User | null>(null);
+  const [loading,setLoading] = useState(true)
 
   const fetchAllUsersTasks = async (token: string) => {
     try {
@@ -36,13 +37,18 @@ function AdminDashboard() {
         }
       );
       setTasks(result.data.tasks);
-      alert(result.data.message);
-      console.log(result, "admin results");
+      if (result.data.tasks.length > 0) {
+        alert(result.data.message);
+      } else {
+        alert('Task Not Found!!')
+      }
+  
     } catch (e: any) {
-      console.log(e, "error");
       alert(e.response.data.message);
       navigate(-1);
       return;
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -69,7 +75,7 @@ function AdminDashboard() {
   }, [navigate]);
 
   return (
-    <div className="w-[80%] mx-auto flex pt-10">
+    <div className="w-[80%] mx-auto pt-10">
       {user?.role === "admin" ? (
         <div>
           <h1 className="text-center text-4xl">
@@ -77,7 +83,7 @@ function AdminDashboard() {
           </h1>
           <div className="text-end"><button onClick={handleLogout} className="bg-red-600 px-4 py-2 rouded-lg">Logout</button></div>
           <div className="flex flex-wrap gap-5 mt-5">
-            {tasks ? (
+            {tasks  && tasks.length >0 ? (
               tasks.map((task: Task) => {
                 return (
                   <div
@@ -97,12 +103,12 @@ function AdminDashboard() {
                 );
               })
             ) : (
-              <p className="text-2xl">Loading tasks...</p>
+              <p className="text-2xl">{loading ? "Loading..." :"Task Not Found!"}</p>
             )}
           </div>
         </div>
       ) : (
-        <div> </div>
+        <div></div>
       )}
     </div>
   );
