@@ -97,7 +97,7 @@ function AdminDashboard() {
                       {task.description}
                     </pre>
                     <p className="text-wrap text-sm text-gray-800 text-right">
-                      Created By {task.createdBy.name}❤️
+                      Created By {task.createdBy.email}❤️
                     </p>
                   </div>
                 );
