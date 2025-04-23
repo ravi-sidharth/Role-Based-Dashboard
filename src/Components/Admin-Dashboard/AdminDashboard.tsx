@@ -37,6 +37,7 @@ function AdminDashboard() {
         }
       );
       setTasks(result.data.tasks);
+      console.log(result.data.tasks)
       if (result.data.tasks.length > 0) {
         alert(result.data.message);
       } else {
@@ -97,7 +98,7 @@ function AdminDashboard() {
                       {task.description}
                     </pre>
                     <p className="text-wrap text-sm text-gray-800 text-right">
-                      Created By {task.createdBy.email}❤️
+                      Created By {task.createdBy?.email}❤️
                     </p>
                   </div>
                 );
